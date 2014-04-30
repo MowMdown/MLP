@@ -40,6 +40,7 @@ Operands  Instruction       Operation
                                  ROtate Right register R for X times
                                  
   B  RXY    jmpEQ R=R0,XY     PC:=XY, if R=R0
+  
   B  0XY    jmp   XY          PC:=XY
      
   F  RXY    jmpLE R<=R0,XY    PC:=XY, if R<=R0
