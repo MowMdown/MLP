@@ -27,60 +27,58 @@ int main()
 	char keystroke;
 	static string MEMORY[H_MEM][V_MEM];
 
-	cout << "Do you wish to load \"mlprog.txt\" ? Y / N : ";
+	cout << "Do you want to load \"mlprog.txt\" ? Y / N : ";
 	cin >> keystroke;
 	system("cls");
 
-	if (keystroke == 'y' || keystroke == 'Y')
-	{
-		try 
-		{
+	try {
+
+		if (keystroke == 'y' || keystroke == 'Y') {
 			ifstream input; 
 			input.open("mlprog.txt");
-			if (!input) 
-			{
+
+			if (!input) {
 				string e = "mlprog.txt Not found";
 				throw e;
 			}//if
 
 			write_mem(input, MEMORY);
 
-		}//try
-		catch (string e) 
-		{
-			cout << "Exception Thrown: " << e << endl;
-			system("pause");
-			return 1;
-		}//catch
-	}//if
-	else 
-	{
-		cout << "Enter your ML Program Using 2Byte Hex values with spaces in between\n"
-			"When you are ready to end your code, use a '00' value!\n"
-			"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n\r";
-		write_mem(cin, MEMORY);
-	}//else
+		} else {
+			cout << "Enter your ML Program Using 2Byte Hex values with spaces in between\n"
+				"When you are ready to end your code, use a '00' value!\n"
+				"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n\r";
 
-	run_ml_c0de(MEMORY);
+			write_mem(cin, MEMORY);
+		}//if-else
+
+		run_ml_c0de(MEMORY);
+
+	} catch (string e) {
+		cout << "Exception Thrown: " << e << endl;
+		system("pause");
+		return 1;
+	}//catch
 
 	return 0;
 }//main
 
 void write_mem(istream &_input, string _mem[][V_MEM])
 {
-	for (int h = 0; h < H_MEM; h++) 
-	{
-		for (int v = 0; v < V_MEM; v++)
-		{
+	bool term = true;
+	for (int h = 0; h < H_MEM; h++) {
+		for (int v = 0; v < V_MEM; v++)	{
 			_input >> _mem[h][v];
 
-			if(_mem[h][v] == "00")
-			{
-				for (int x = h; x < H_MEM; x++)
-				{
-					for (int z = v ; z < V_MEM; z++)
-					{
-						_mem[x][z] = "00";
+			if(_mem[h][v] == "C0") {
+				for (int x = h; x < H_MEM; x++)	{
+					for (int z = v ; z < V_MEM; z++) {
+						if (term) {
+							_mem[x][z] = "C0";
+							term = false;
+						} else { 
+							_mem[x][z] = "00";
+						}
 					}//for
 
 					v = 0;
@@ -97,12 +95,11 @@ void write_mem(istream &_input, string _mem[][V_MEM])
 void display_mem(ostream &_output, string _mem[][V_MEM], string _reg[])
 {
 	cout << "0x   0   1   2   3   4   5   6   7   8   9   A   B   C   D   E   F\n";
-	for (int h = 0; h < H_MEM; h++)
-	{
+
+	for (int h = 0; h < H_MEM; h++)	{
 		cout << uppercase << hex << h << "|  ";
 
-		for (int v = 0; v < V_MEM; v++)
-		{	
+		for (int v = 0; v < V_MEM; v++)	{	
 			cout << fixed << hex << _mem[h][v] << "  ";
 		}//for
 
@@ -114,27 +111,27 @@ void run_ml_c0de(string _mem[][V_MEM])
 {
 	bool init_pc = false;
 	bool step_pc = false;
-	string PC = "";
+	string PC = "00";
 	string IR = "";
 	string sout;
 	char step;
 	long long val;
-	string REGISTER[16];
-
-	for (int i = 0; i < 16; i++)
-	{
-		REGISTER[i] == "00";
-	}
+	string REGISTER[16] = { "00", "00", "00", "00",
+							"00", "00", "00", "00",
+							"00", "00", "00", "00",
+							"00", "00", "00", "00" };
 
 	display_mem(cout, _mem, REGISTER);
 
 	do {
-		if (!init_pc)
-		{
+		if (!init_pc) {
 			cout << "\nTurn on Step Thru? Y / N : ";
 			cin >> step;
-			if (step == 'y' || step == 'Y')
+
+			if (step == 'y' || step == 'Y'){
 				step_pc = true;
+			}//if
+
 			cout << "\nSet PC= "; 
 			cin >> PC;
 			init_pc = true;
@@ -150,23 +147,23 @@ void run_ml_c0de(string _mem[][V_MEM])
 		sout = REGISTER[15];
 		val = strtoul(sout.c_str(), NULL, 16);
 		step = val - 0x100;
+
 		cout << "\nIR= " << IR << "  PC= " << PC  << "  Screen= " << step << endl << endl;
-		
-		if (step_pc)
-		{
+
+		if (step_pc) {
 			system("pause");
-		}
-		else
-		{
+		} else {
 			Sleep(1000);
-		}
+		}//if-else
 
-	} while (IR != "0000" && IR != "Halt");
+	} while (IR != "0000" && IR != "C000");
 
-	if (IR == "Halt" || IR == "C000")
+	if (IR == "C000") {
 		cout << "\nProgram has reached HALT\n" << endl;
-	else
+	} else {
 		cout << "\nProgram has ran out of valid instructions\n" << endl;
+	}//if-else
+
 	system("pause");
 }
 
@@ -183,67 +180,57 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	int PC_LEFT = strtoul(sub1.c_str(), NULL, 16);
 	int PC_RIGHT = strtoul(sub2.c_str(), NULL, 16);
 
-	try
-	{
-		if (HORIZONTAL == 15 && VERTICAL + 1 >= 16)
-		{
-			_IR = "ERR";
-			throw e;
-		}
-		op_code_left = _mem[HORIZONTAL][VERTICAL];
-		if (VERTICAL + 1 == 16)
-		{
-			VERTICAL = 0;
-			HORIZONTAL += 1;
-		}
-		else
-		{
-			VERTICAL += 1;
-		}
-		op_code_right = _mem[HORIZONTAL][VERTICAL];
-		_IR = op_code_left + op_code_right;
+	if (HORIZONTAL == 15 && VERTICAL + 1 >= 16) {
+		_IR = "ERR";
+		throw "IR: " + e;
+	}//if
 
-		/**	If the high bit of the high byte is 6 we step once
-		  *	since our opcode only needs 1 byte for its instruction 
-		  */
-		sub1 = op_code_left.substr(0,1); 
-		if (PC_LEFT == 16 && PC_RIGHT + 2 >= 16)
-		{
-			_IR = "ERR";
-			throw e;
-		}
-		if (PC_RIGHT + 2 > 15 || PC_RIGHT + 1 > 16)
-		{
-			PC_LEFT += 1;
-			if(sub1 == "6") {
-				PC_RIGHT -= 15;
-			} else {
-				PC_RIGHT -= 14;
-			}
+	op_code_left = _mem[HORIZONTAL][VERTICAL];
+
+	if (VERTICAL + 1 == 16) {
+		VERTICAL = 0;
+		HORIZONTAL += 1;
+	} else {
+		VERTICAL += 1;
+	}//if-else
+
+	op_code_right = _mem[HORIZONTAL][VERTICAL];
+	_IR = op_code_left + op_code_right;
+
+	 /*	 If the high bit of the high byte is 6 we step once
+	  *	 since our opcode only needs 1 byte for its instruction
+	  */
+
+	sub1 = op_code_left.substr(0,1); 
+
+	if (PC_LEFT == 16 && PC_RIGHT + 2 >= 16) {
+		_IR = "ERR";
+		throw "PC: " + e;
+	}//if
+
+	if (PC_RIGHT + 2 > 15 || PC_RIGHT + 1 > 16) {
+		PC_LEFT += 1;
+		if (sub1 == "6") {
+			PC_RIGHT -= 15;
 		} else {
-			if (sub1 == "6") {
-				PC_RIGHT += 1;
-			} else {
-				PC_RIGHT += 2;
-			}
+			PC_RIGHT -= 14;
 		}
+	} else {
+		if (sub1 == "6") {
+			PC_RIGHT += 1;
+		} else {
+			PC_RIGHT += 2;
+		}
+	}//if-else
 
-		pc_left = static_cast<ostringstream*>( &(ostringstream() 
-			<< (PC_LEFT)) )->str();
-		pc_right  =  static_cast<ostringstream*>( &(ostringstream() 
-			<< (PC_RIGHT)) )->str();
+	pc_left = static_cast<ostringstream*>( &(ostringstream() 
+		<< (PC_LEFT)) )->str();
+	pc_right  =  static_cast<ostringstream*>( &(ostringstream() 
+		<< (PC_RIGHT)) )->str();
 
-		convert(pc_left); convert(pc_right);
+	convert(pc_left); convert(pc_right);
 
-		_PC = pc_left + pc_right;
-
-	}
-	catch (string e)
-	{
-		cout << "Exception Thrown: " << e << endl;
-		system("pause");
-		return;
-	}
+	_PC = pc_left + pc_right;
 }
 
 void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
@@ -266,12 +253,11 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 	unsigned int right = strtoul(fourth.c_str(), NULL, 16);
 
 	/* These are left and right values for registers */
-    unsigned long long int r_left, r_right, final;
+	unsigned long long int r_left, r_right, final;
 	r_left = strtoul(_reg[left].c_str(), NULL, 16);
 	r_right = strtoul(_reg[right].c_str(), NULL, 16);
 
-	switch(oprnd)
-	{
+	switch(oprnd) {
 	case 1:
 		_reg[rgstr] = _mem[left][right];
 		break;
@@ -323,11 +309,16 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 	case 0xB:
 		r_left = strtoul(_reg[rgstr].c_str(), NULL, 16);
 		r_right = strtoul(_reg[0].c_str(), NULL, 16);
-		if (rgstr != 0 && (r_left == r_right))
+
+		if (second == "0") {
 			_PC = third + fourth;
+		} else if (rgstr != 0 && (r_left == r_right)) {
+			_PC = third + fourth;
+		}//if-else
+
 		break;
 	case 0xC:
-		_IR = "Halt";
+		_IR = "C000";
 		_PC = "zz";
 		break;
 	case 0xD:
@@ -347,7 +338,6 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 		if (r_left <= r_right)
 			_PC = third + fourth;
 		break;
-
 	}
 }
 
@@ -375,8 +365,8 @@ void intToHex(unsigned long long int _left, unsigned long long int _right, strin
 	string left, right;
 	_left /= 16;
 	_right %= 16;
-	left = to_string(_left);
-	right = to_string(_right);
+	left = static_cast<ostringstream*>( &(ostringstream() << (_left)) )->str();
+	right = static_cast<ostringstream*>( &(ostringstream() << (_right)) )->str();
 	convert(left); convert(right);
 	_final = (left + right);
 }
