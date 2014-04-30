@@ -9,6 +9,7 @@ Based on Simple Simulator instructions
 
 OpCode/
 Operands  Instruction       Operation
+
   2  RXY    load  R,XY        register[R]:=XY
   
   1  RXY    load  R,[XY]      register[R]:=memory[XY]
