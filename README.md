@@ -24,11 +24,11 @@ Operands  Instruction       Operation
   5  RST    addi  R,S,T       register[R]:=register[S]+register[T]
                                  integer add
                                  
-  6  RST    addf  R,S,T       register[R]:=register[S]+register[T]
-                                 floating-point add
+  6  0      Input             register[E]:= Input from Keyboard
                                  
   7  RST    or    R,S,T       register[R]:=register[S] OR register[T]
                                  bitwise OR
+                                 
   8  RST    and   R,S,T       register[R]:=register[S] AND register[T]
                                  bitwise AND
                                  
