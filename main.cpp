@@ -1,6 +1,7 @@
-//Ryan Wallace
-//Design Project
-//CSC 215
+/* Ryan Wallace
+ * Design Project
+ * CSC 215
+ */
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
@@ -12,14 +13,28 @@
 #include <Windows.h>
 using namespace std;
 
+//Sets our main memory size: 16(vertical) x 16(horizontal)
 const static int V_MEM = 16, H_MEM = 16;
 
+//Writes the hex values to the main memory
 void write_mem(istream &_input, string _mem[][V_MEM]);
+
+//Writes the 16 x 16 memory grid to the screen
 void display_mem(ostream &_output, string _mem[][V_MEM], string _reg[]);
+
+//Executes the ML code
 void run_ml_c0de(string _mem[][V_MEM]);
+
+//Separates the 4-bits into (OpCode, Register, X, Y) for Execution
 void op_code(string _mem[][V_MEM], string &_PC, string &_IR);
+
+//Uses the OpCode to manipulate data
 void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC);
+
+//Converts to hex digits
 void convert(string &hex);
+
+//Takes an integer and converts it into its hex equivalent
 void intToHex(unsigned long long int _left, unsigned long long int _right, string &_final);
 
 int main()
@@ -32,7 +47,6 @@ int main()
 	system("cls");
 
 	try {
-
 		if (keystroke == 'y' || keystroke == 'Y') {
 			ifstream input; 
 			input.open("mlprog.txt");
@@ -42,19 +56,21 @@ int main()
 				throw e;
 			}//if
 
-			write_mem(input, MEMORY);
+			write_mem(input, MEMORY); //Writes to memory from mlprog.txt file
 
 		} else {
 			cout << "Enter your ML Program Using 2Byte Hex values with spaces in between\n"
 				"When you are ready to end your code, use a '00' value!\n"
 				"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n\r";
 
-			write_mem(cin, MEMORY);
+			write_mem(cin, MEMORY); //Writes to memory from keyboard input
+
 		}//if-else
 
-		run_ml_c0de(MEMORY);
+		run_ml_c0de(MEMORY); //Executes all of the instructions programmed into memory
 
 	} catch (string e) {
+		system("cls");
 		cout << "Exception Thrown: " << e << endl;
 		system("pause");
 		return 1;
@@ -70,7 +86,7 @@ void write_mem(istream &_input, string _mem[][V_MEM])
 		for (int v = 0; v < V_MEM; v++)	{
 			_input >> _mem[h][v];
 
-			if(_mem[h][v] == "C0") {
+			if (_mem[h][v] == "C0" || _mem[h][v] == "c0") {
 				for (int x = h; x < H_MEM; x++)	{
 					for (int z = v ; z < V_MEM; z++) {
 						if (term) {
@@ -117,9 +133,9 @@ void run_ml_c0de(string _mem[][V_MEM])
 	char step;
 	long long val;
 	string REGISTER[16] = { "00", "00", "00", "00",
-		"00", "00", "00", "00",
-		"00", "00", "00", "00",
-		"00", "00", "00", "00" };
+		                    "00", "00", "00", "00",
+							"00", "00", "00", "00",
+							"00", "00", "00", "00" };
 
 	display_mem(cout, _mem, REGISTER);
 
@@ -272,7 +288,9 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 		_reg[right] = _reg[left];
 		break;
 	case 5:
-		_reg[rgstr] = _reg[left] + _reg[right];
+		r_left += r_right;
+		intToHex(r_left, r_left, input);
+		_reg[rgstr] = input;
 		break;
 	case 6:
 		cout << "\nEnter ASCII: ";
