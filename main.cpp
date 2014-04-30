@@ -117,9 +117,9 @@ void run_ml_c0de(string _mem[][V_MEM])
 	char step;
 	long long val;
 	string REGISTER[16] = { "00", "00", "00", "00",
-							"00", "00", "00", "00",
-							"00", "00", "00", "00",
-							"00", "00", "00", "00" };
+		"00", "00", "00", "00",
+		"00", "00", "00", "00",
+		"00", "00", "00", "00" };
 
 	display_mem(cout, _mem, REGISTER);
 
@@ -197,9 +197,9 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	op_code_right = _mem[HORIZONTAL][VERTICAL];
 	_IR = op_code_left + op_code_right;
 
-	 /*	 If the high bit of the high byte is 6 we step once
-	  *	 since our opcode only needs 1 byte for its instruction
-	  */
+	/*	 If the high bit of the high byte is 6 we step once
+	 *	 since our opcode only needs 1 byte for its instruction
+	 */
 
 	sub1 = op_code_left.substr(0,1); 
 
