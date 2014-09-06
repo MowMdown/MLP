@@ -1,6 +1,6 @@
-/*	Ryan Wallace
- *  Design Project
- *	CSC 215
+/* Ryan Wallace
+ * Design Project
+ * CSC 215
  */
 #include <cstdlib>
 #include <cstdio>
@@ -57,14 +57,14 @@ int main()
 				throw e;
 			}//if
 
-			write_mem(input, MEMORY);							//Writes to memory from mlprog.txt file
+			write_mem(input, MEMORY);			//Writes to memory from mlprog.txt file
 
 		} else {
 			cout << "Enter your ML Program Using 2Byte Hex values with spaces in between\n"
 				"When you are ready to end your code, use a '00' value!\n"
 				"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --\n";
 
-			write_mem(cin, MEMORY);								//Writes to memory from keyboard input
+			write_mem(cin, MEMORY);				//Writes to memory from keyboard input
 
 			system("cls");
 		}//if-else
@@ -90,9 +90,9 @@ void write_mem(istream &_input, string _mem[][V_MEM])
 	for (int h = 0; h < H_MEM; h++) {
 		for (int v = 0; v < V_MEM; v++) {
 
-			_input >> _mem[h][v];								//Read in a byte into the memory location
+			_input >> _mem[h][v];				//Read in a byte into the memory location
 
-			if ((_mem[h][v] == "C0" || _mem[h][v] == "c0")		//If the byte is the terminating byte 
+			if ((_mem[h][v] == "C0" || _mem[h][v] == "c0")	//If the byte is the terminating byte 
 				|| !_input) {				//or we run out of bytes fill the rest with 00's
 					if (!_input) {													
 						term = false;
@@ -147,7 +147,8 @@ void run_ml_c0de(string _mem[][V_MEM])
 	string sout, step, screen;
 	long long val;
 	enum REG {A = 10, B, C, D, E, F };
-	string REGISTER[F + 1] = { "00", "00", "00", "00",
+	string REGISTER[F + 1] = 
+	      { "00", "00", "00", "00",
 		"00", "00", "00", "00",
 		"00", "00", "00", "00",
 		"00", "00", "00", "00" };
@@ -170,17 +171,17 @@ void run_ml_c0de(string _mem[][V_MEM])
 
 		system("cls");
 
-		op_code(_mem, PC, IR);									//(1)Fetch Instruction
-		instruction(_mem, IR, REGISTER, PC);					//(2)Decode, (3)Execute Instruction
-		display_mem(cout, _mem, REGISTER);						//Update Display
+		op_code(_mem, PC, IR);					//(1)Fetch Instruction
+		instruction(_mem, IR, REGISTER, PC);			//(2)Decode, (3)Execute Instruction
+		display_mem(cout, _mem, REGISTER);			//Update Display
 
-		if (REGISTER[F] == "FF") {								//Clear the screen if data is "FF"
+		if (REGISTER[F] == "FF") {				//Clear the screen if data is "FF"
 			screen = "";
 		} else if (REGISTER[F] != "00") {
-			sout = REGISTER[F];									//Convert hex value
-			val = strtoul(sout.c_str(), NULL, 16);				//	into an ASCII
-			step = (val - 0x100);								//	character to be displayed
-			screen += step;										//  on-screen in a string
+			sout = REGISTER[F];				//Convert hex value
+			val = strtoul(sout.c_str(), NULL, 16);		//	into an ASCII
+			step = (val - 0x100);				//	character to be displayed
+			screen += step;					//  on-screen in a string
 		}//if-else
 
 		cout << "\nIR= " << IR << " PC= " << PC << " Screen= " << screen << endl << endl;
@@ -208,8 +209,8 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	string sub1, sub2, sub3, sub4;
 	string e = "Index [Range] Out of Bounds!";
 
-	sub1 = _PC.substr(0,1);										//Separate the _PC into two halves
-	sub2 = _PC.substr(1,1);										//sub1 is horizontal(x), sub2 is vertical(y)
+	sub1 = _PC.substr(0,1);						//Separate the _PC into two halves
+	sub2 = _PC.substr(1,1);						//sub1 is horizontal(x), sub2 is vertical(y)
 
 	/*  Convert values from string to int data type
 	*  Keeping the original values
@@ -219,12 +220,12 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	int PC_LEFT = strtoul(sub1.c_str(), NULL, 16);
 	int PC_RIGHT = strtoul(sub2.c_str(), NULL, 16);
 
-	if (HORIZONTAL >= 15 && VERTICAL >= 15) {					//If the X is at the last value in the row
-		_IR = "ERR";											//then we must move the right value to the 
-		throw "IR: " + e;										//start of the new row, if we reach the last
-	}//if														//row and the last column, throw and exception
+	if (HORIZONTAL >= 15 && VERTICAL >= 15) {			//If the X is at the last value in the row
+		_IR = "ERR";						//then we must move the right value to the 
+		throw "IR: " + e;					//start of the new row, if we reach the last
+	}//if								//row and the last column, throw and exception
 
-	op_code_left = _mem[HORIZONTAL][VERTICAL];					//Update the high-end (left) byte
+	op_code_left = _mem[HORIZONTAL][VERTICAL];			//Update the high-end (left) byte
 
 	if (VERTICAL + 1 > 15) {
 		VERTICAL = 0;
@@ -233,16 +234,16 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 		VERTICAL += 1;
 	}//if-else
 
-	op_code_right = _mem[HORIZONTAL][VERTICAL];					//Update the low-end (right) byte
-	_IR = op_code_left + op_code_right;							//Add the two bytes to form the Instruction
+	op_code_right = _mem[HORIZONTAL][VERTICAL];			//Update the low-end (right) byte
+	_IR = op_code_left + op_code_right;				//Add the two bytes to form the Instruction
 
 	/*  If the high bit of the high byte is "6" we step once
 	*  since our opcode only needs 1 byte for its instruction
 	*/
 	sub1 = op_code_left.substr(0,1);
 
-	if (PC_LEFT >= 15 && PC_RIGHT >= 15) {						//Same as the _IR we increment it and if it goes 
-		_IR = "ERR";											//past the last byte FF(255) we throw and exception
+	if (PC_LEFT >= 15 && PC_RIGHT >= 15) {				//Same as the _IR we increment it and if it goes 
+		_IR = "ERR";						//past the last byte FF(255) we throw and exception
 		throw "PC: " + e;
 	}//if
 
@@ -266,10 +267,10 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	pc_right = static_cast<ostringstream*>( &(ostringstream()	//Convert the low-end bit from an int to string
 		<< (PC_RIGHT)) )->str();
 
-	convert(pc_left); convert(pc_right);						//Convert them into the hex form
+	convert(pc_left); convert(pc_right);				//Convert them into the hex form
 
-	_PC = pc_left + pc_right;									//Concatenate the two strings, which become the
-}//op_code														//	new program counter
+	_PC = pc_left + pc_right;					//Concatenate the two strings, which become the
+}//op_code								//	new program counter
 
 void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 {
@@ -278,103 +279,103 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 	unsigned int ror, mask;
 
 	/* 1<-operand 2<-Register, 3<-X, 4<-Y */
-	first = _IR.substr(0,1);									//High bit / High byte
+	first = _IR.substr(0,1);					//High bit / High byte
 	unsigned int oprnd = strtoul(first.c_str(), NULL, 16);		//Convert from string to integer
 
-	second = _IR.substr(1,1);									//Low bit / High byte
+	second = _IR.substr(1,1);					//Low bit / High byte
 	unsigned int rgstr = strtoul(second.c_str(), NULL, 16);		//Convert from string to integer
 
-	third = _IR.substr(2,1);									//High bit / Low byte
+	third = _IR.substr(2,1);					//High bit / Low byte
 	unsigned int left = strtoul(third.c_str(), NULL, 16);		//Convert from string to integer
 
-	fourth = _IR.substr(3,1);									//Low bit / low byte
+	fourth = _IR.substr(3,1);					//Low bit / low byte
 	unsigned int right = strtoul(fourth.c_str(), NULL, 16);		//Convert from string to integer
 
 	/* These are left and right values for registers */
 	unsigned int r_left, r_right, final;
-	r_left = strtoul(_reg[left].c_str(), NULL, 16);				//Convert the data in _reg[X] and _reg[Y]  
-	r_right = strtoul(_reg[right].c_str(), NULL, 16);			//	from string type to and integer type 
+	r_left = strtoul(_reg[left].c_str(), NULL, 16);			//Convert the data in _reg[X] and _reg[Y]  
+	r_right = strtoul(_reg[right].c_str(), NULL, 16);		//	from string type to and integer type 
 
 	/* The oprnd is the highest bit which is the instruction to preform */
 	switch(oprnd) {
 	case 1:
-		_reg[rgstr] = _mem[left][right];						//Move the data from _mem[X][Y]
-		break;//0x1												//into the _reg[register]
+		_reg[rgstr] = _mem[left][right];			//Move the data from _mem[X][Y]
+		break;//0x1						//into the _reg[register]
 	case 2:
-		_reg[rgstr] = third + fourth;							//Store raw value XY into _reg[register]
+		_reg[rgstr] = third + fourth;				//Store raw value XY into _reg[register]
 		break;//0x2
 	case 3:
-		_mem[left][right] = "";									//Clear memory before we move new data
-		_mem[left][right] = _reg[rgstr];						//Move data from _reg[register] into _mem[X][Y]
+		_mem[left][right] = "";					//Clear memory before we move new data
+		_mem[left][right] = _reg[rgstr];			//Move data from _reg[register] into _mem[X][Y]
 		break;//0x3
 	case 4:
-		_reg[right] = _reg[left];								//Move data from _reg[X] into _reg[Y]
+		_reg[right] = _reg[left];				//Move data from _reg[X] into _reg[Y]
 		break;//0x4
 	case 5:
-		r_left += r_right;										//Add integer values from _reg[X] and
-		intToHex(r_left, r_left, input);						//	_reg[Y] and then convert that into its
-		_reg[rgstr] = input;									//	hex form before we store it into _reg[register]
+		r_left += r_right;					//Add integer values from _reg[X] and
+		intToHex(r_left, r_left, input);			//	_reg[Y] and then convert that into its
+		_reg[rgstr] = input;					//	hex form before we store it into _reg[register]
 		break;//0x5
 	case 6:
-		cout << "\nEnter ASCII: ";								//Read in our ASCII char from cin
-		cin >> cinput;											//	and then convert that from a char to an int 
-		final = cinput;											//	then we convert it into its hex value
-		intToHex(final, final, input);							//	before we store it into Register E
+		cout << "\nEnter ASCII: ";				//Read in our ASCII char from cin
+		cin >> cinput;						//	and then convert that from a char to an int 
+		final = cinput;						//	then we convert it into its hex value
+		intToHex(final, final, input);				//	before we store it into Register E
 		_reg[14] = input;										
 		break;//0x6
 	case 7:
-		final = (r_left | r_right);								//Bitwise OR data from _reg[X] and _reg[Y]
-		intToHex(final, final, input);							//Convert to hex value and store it
-		_reg[rgstr] = input;									//	in the _reg[register]
+		final = (r_left | r_right);				//Bitwise OR data from _reg[X] and _reg[Y]
+		intToHex(final, final, input);				//Convert to hex value and store it
+		_reg[rgstr] = input;					//	in the _reg[register]
 		break;//0x7
 	case 8:
-		final = (r_left & r_right);								//Bitwise AND data from _reg[X] and _reg[Y]
-		intToHex(final, final, input);							//Convert to hex value and store it
-		_reg[rgstr] = input;									//	in the _reg[register]
+		final = (r_left & r_right);				//Bitwise AND data from _reg[X] and _reg[Y]
+		intToHex(final, final, input);				//Convert to hex value and store it
+		_reg[rgstr] = input;					//	in the _reg[register]
 		break;//0x8
 	case 9:
-		final = (r_left ^ r_right);								//Bitwise XOR data from _reg[X] and _reg[Y]
-		intToHex(final, final, input);							//Convert to hex value and store it
-		_reg[rgstr] = input;									//	in the _reg[register]
+		final = (r_left ^ r_right);				//Bitwise XOR data from _reg[X] and _reg[Y]
+		intToHex(final, final, input);				//Convert to hex value and store it
+		_reg[rgstr] = input;					//	in the _reg[register]
 		break;//0x9
 	case 0xA:
-		ror = strtoul(_reg[rgstr].c_str(), NULL, 16);			//Bitwise Right Rotate the bits of the
-		mask = right;											// _reg[Y], first convert it to an int
-		final = ror;											// and then rotate the bits before 
-		ror <<= mask;											// converting it back into a hex string
-		final = (ror << (32 - mask));							// for storage in the _reg[register]
+		ror = strtoul(_reg[rgstr].c_str(), NULL, 16);		//Bitwise Right Rotate the bits of the
+		mask = right;						// _reg[Y], first convert it to an int
+		final = ror;						// and then rotate the bits before 
+		ror <<= mask;						// converting it back into a hex string
+		final = (ror << (32 - mask));				// for storage in the _reg[register]
 		final = (ror | final);
 		intToHex(final, final, input);
 		_reg[rgstr] = input;
 		break;//0xA
 	case 0xB:
-		r_left = strtoul(_reg[rgstr].c_str(), NULL, 16);		//Get the data from _reg[register] and
-		r_right = strtoul(_reg[0].c_str(), NULL, 16);			//	then get the data from _reg[0] to 
-		//	compare to see if it is EQUAL TO
-		if (second == "0") {									//	each other and then jump to raw XY
-			_PC = third + fourth;								//If _reg[register] is "0" we just
-		} else if (rgstr != 0 && (r_left == r_right)) {			// Jump to raw location XY regardless
-			_PC = third + fourth;								// of _reg[0]'s value
+		r_left = strtoul(_reg[rgstr].c_str(), NULL, 16);	//Get the data from _reg[register] and
+		r_right = strtoul(_reg[0].c_str(), NULL, 16);		//	then get the data from _reg[0] to 
+									//	compare to see if it is EQUAL TO
+		if (second == "0") {					//	each other and then jump to raw XY
+			_PC = third + fourth;				//If _reg[register] is "0" we just
+		} else if (rgstr != 0 && (r_left == r_right)) {		// Jump to raw location XY regardless
+			_PC = third + fourth;				// of _reg[0]'s value
 		}//if-else
 		break;//0xB
 	case 0xC:
-		_IR = "C000";											//We halt all instruction and exit
-		break;//0xC												//	the program	
+		_IR = "C000";						//We halt all instruction and exit
+		break;//0xC						//	the program	
 	case 0xD:
-		_reg[rgstr] = _mem[r_left][r_right];					//Take value from _mem[X][Y] and store it
+		_reg[rgstr] = _mem[r_left][r_right];			//Take value from _mem[X][Y] and store it
 		break;//0xD													//into _reg[register]
 	case 0xE:
-		input = _reg[right];									//Take the byte from _reg[Y] and convert 
-		first = input.substr(0,1);								//	them to an int before we use them
-		second = input.substr(1,1);								//	as a memory location "_mem[X][Y]
-		r_left = strtoul(first.c_str(), NULL, 16);				//Then take the data from _reg[X] and
-		r_right = strtoul(second.c_str(), NULL, 16);			//	store it into our new memory location
+		input = _reg[right];					//Take the byte from _reg[Y] and convert 
+		first = input.substr(0,1);				//	them to an int before we use them
+		second = input.substr(1,1);				//	as a memory location "_mem[X][Y]
+		r_left = strtoul(first.c_str(), NULL, 16);		//Then take the data from _reg[X] and
+		r_right = strtoul(second.c_str(), NULL, 16);		//	store it into our new memory location
 		_mem[r_left][r_right] = _reg[left];
 		break;//0xE
 	case 0xF:
-		r_left = strtoul(_reg[rgstr].c_str(), NULL, 16);		//Compare the data from _reg[register] to
-		r_right = strtoul(_reg[0].c_str(), NULL, 16);			//	_reg[0] and if the data is LESS THAN OR
-		// EQUAL TO we jump to raw location XY
+		r_left = strtoul(_reg[rgstr].c_str(), NULL, 16);	//Compare the data from _reg[register] to
+		r_right = strtoul(_reg[0].c_str(), NULL, 16);		//	_reg[0] and if the data is LESS THAN OR
+									// EQUAL TO we jump to raw location XY
 		if (r_left <= r_right) {
 			_PC = third + fourth;
 		}//if
