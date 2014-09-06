@@ -213,8 +213,8 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	sub2 = _PC.substr(1,1);						//sub1 is horizontal(x), sub2 is vertical(y)
 
 	/*  Convert values from string to int data type
-	*  Keeping the original values
-	*/
+	 *  Keeping the original values
+	 */
 	int HORIZONTAL = strtoul(sub1.c_str(), NULL, 16);
 	int VERTICAL = strtoul(sub2.c_str(), NULL, 16);
 	int PC_LEFT = strtoul(sub1.c_str(), NULL, 16);
@@ -238,8 +238,8 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	_IR = op_code_left + op_code_right;				//Add the two bytes to form the Instruction
 
 	/*  If the high bit of the high byte is "6" we step once
-	*  since our opcode only needs 1 byte for its instruction
-	*/
+	 *  since our opcode only needs 1 byte for its instruction
+	 */
 	sub1 = op_code_left.substr(0,1);
 
 	if (PC_LEFT >= 15 && PC_RIGHT >= 15) {				//Same as the _IR we increment it and if it goes 
