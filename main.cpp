@@ -93,7 +93,7 @@ void write_mem(istream &_input, string _mem[][V_MEM])
 			_input >> _mem[h][v];				//Read in a byte into the memory location
 
 			if ((_mem[h][v] == "C0" || _mem[h][v] == "c0")	//If the byte is the terminating byte 
-				|| !_input) {				//or we run out of bytes fill the rest with 00's
+				|| !_input) {				//	or we run out of bytes fill the rest with 00's
 					if (!_input) {													
 						term = false;
 					}//if
