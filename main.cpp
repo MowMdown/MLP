@@ -181,7 +181,7 @@ void run_ml_c0de(string _mem[][V_MEM])
 			sout = REGISTER[F];				//Convert hex value
 			val = strtoul(sout.c_str(), NULL, 16);		//	into an ASCII
 			step = (val - 0x100);				//	character to be displayed
-			screen += step;					//  on-screen in a string
+			screen += step;					//      on-screen in a string
 		}//if-else
 
 		cout << "\nIR= " << IR << " PC= " << PC << " Screen= " << screen << endl << endl;
@@ -221,9 +221,9 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	int PC_RIGHT = strtoul(sub2.c_str(), NULL, 16);
 
 	if (HORIZONTAL >= 15 && VERTICAL >= 15) {			//If the X is at the last value in the row
-		_IR = "ERR";						//then we must move the right value to the 
-		throw "IR: " + e;					//start of the new row, if we reach the last
-	}//if								//row and the last column, throw and exception
+		_IR = "ERR";						//	then we must move the right value to the 
+		throw "IR: " + e;					//	start of the new row, if we reach the last
+	}//if								//	row and the last column, throw and exception
 
 	op_code_left = _mem[HORIZONTAL][VERTICAL];			//Update the high-end (left) byte
 
@@ -243,7 +243,7 @@ void op_code(string _mem[][V_MEM], string &_PC, string &_IR)
 	sub1 = op_code_left.substr(0,1);
 
 	if (PC_LEFT >= 15 && PC_RIGHT >= 15) {				//Same as the _IR we increment it and if it goes 
-		_IR = "ERR";						//past the last byte FF(255) we throw and exception
+		_IR = "ERR";						//	past the last byte FF(255) we throw and exception
 		throw "PC: " + e;
 	}//if
 
@@ -300,7 +300,7 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 	switch(oprnd) {
 	case 1:
 		_reg[rgstr] = _mem[left][right];			//Move the data from _mem[X][Y]
-		break;//0x1						//into the _reg[register]
+		break;//0x1						//	into the _reg[register]
 	case 2:
 		_reg[rgstr] = third + fourth;				//Store raw value XY into _reg[register]
 		break;//0x2
@@ -340,10 +340,10 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 		break;//0x9
 	case 0xA:
 		ror = strtoul(_reg[rgstr].c_str(), NULL, 16);		//Bitwise Right Rotate the bits of the
-		mask = right;						// _reg[Y], first convert it to an int
-		final = ror;						// and then rotate the bits before 
-		ror <<= mask;						// converting it back into a hex string
-		final = (ror << (32 - mask));				// for storage in the _reg[register]
+		mask = right;						// 	_reg[Y], first convert it to an int
+		final = ror;						// 	and then rotate the bits before 
+		ror <<= mask;						// 	converting it back into a hex string
+		final = (ror << (32 - mask));				// 	for storage in the _reg[register]
 		final = (ror | final);
 		intToHex(final, final, input);
 		_reg[rgstr] = input;
@@ -354,8 +354,8 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 									//	compare to see if it is EQUAL TO
 		if (second == "0") {					//	each other and then jump to raw XY
 			_PC = third + fourth;				//If _reg[register] is "0" we just
-		} else if (rgstr != 0 && (r_left == r_right)) {		// Jump to raw location XY regardless
-			_PC = third + fourth;				// of _reg[0]'s value
+		} else if (rgstr != 0 && (r_left == r_right)) {		// 	Jump to raw location XY regardless
+			_PC = third + fourth;				// 	of _reg[0]'s value
 		}//if-else
 		break;//0xB
 	case 0xC:
@@ -375,7 +375,7 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 	case 0xF:
 		r_left = strtoul(_reg[rgstr].c_str(), NULL, 16);	//Compare the data from _reg[register] to
 		r_right = strtoul(_reg[0].c_str(), NULL, 16);		//	_reg[0] and if the data is LESS THAN OR
-									// EQUAL TO we jump to raw location XY
+									// 	EQUAL TO we jump to raw location XY
 		if (r_left <= r_right) {
 			_PC = third + fourth;
 		}//if
