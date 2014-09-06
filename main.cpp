@@ -363,7 +363,7 @@ void instruction(string _mem[][V_MEM], string &_IR, string _reg[], string &_PC)
 		break;//0xC						//	the program	
 	case 0xD:
 		_reg[rgstr] = _mem[r_left][r_right];			//Take value from _mem[X][Y] and store it
-		break;//0xD													//into _reg[register]
+		break;//0xD						//	into _reg[register]
 	case 0xE:
 		input = _reg[right];					//Take the byte from _reg[Y] and convert 
 		first = input.substr(0,1);				//	them to an int before we use them
